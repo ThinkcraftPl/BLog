@@ -34,7 +34,7 @@ project(${PROJECT_NAME} VERSION ${GIT_VERSION} LANGUAGES CXX)
 file(GLOB CPPFiles src/*.cpp src/**/*.cpp)
 file(GLOB HPPFiles include/BLog/*.hpp include/BLog/*.hpp)
 
-add_library(${PROJECT_NAME} STATIC ${CPPFiles} ${HPPFiles})
+add_library(${PROJECT_NAME} SHARED ${CPPFiles} ${HPPFiles})
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
