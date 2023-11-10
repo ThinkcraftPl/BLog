@@ -23,14 +23,13 @@ if(NOT DEFINED GIT_VERSION)
 endif()
 
 string(REGEX REPLACE "^v" "" GIT_VERSION "${GIT_VERSION}")
-string(REGEX REPLACE "-.*$" "" GIT_VERSION "${GIT_VERSION}")
+string(REGEX REPLACE "-[^-]*$" "" GIT_VERSION "${GIT_VERSION}")
+string(REGEX REPLACE "-" "." GIT_VERSION "${GIT_VERSION}")
 
 message("Version: ${GIT_VERSION}")
 
 set(PROJECT_NAME BLog)
 project(${PROJECT_NAME} VERSION ${GIT_VERSION} LANGUAGES CXX)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB CPPFiles src/*.cpp src/**/*.cpp)
 file(GLOB HPPFiles include/BLog/*.hpp include/BLog/*.hpp)

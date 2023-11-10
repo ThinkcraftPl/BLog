@@ -1,1 +1,1 @@
-#include "blog.hpp"
+#include <BLog/blog.hpp>
