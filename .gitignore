@@ -5,3 +5,5 @@ Makefile
 compile_commands.json
 libBLog.a
 BLog_sandbox
+lib/
+bin/
