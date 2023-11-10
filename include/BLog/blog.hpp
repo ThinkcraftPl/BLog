@@ -6,8 +6,10 @@
 
 #define BLogSetLogLevel(level) BLog::Logger::instance().setLogLevel(level)
 
-#define BLog(level, data) BLog::Logger::instance() << level << data << BLog::Special::flush
-#define BLogLine(level, data) BLog::Logger::instance() << level << data << BLog::Special::endl
+#define BLogFileLine BLog::Logger::instance().setFileLine(__FILE__,__LINE__)
+
+#define BLog(level, data) BLogFileLine << level << data << BLog::Special::flush
+#define BLogLine(level, data) BLogFileLine << level << data << BLog::Special::endl
 
 #define BLogDebug(data) BLog(BLog::Level::Debug, data)
 #define BLogInfo(data) BLog(BLog::Level::Info, data)
@@ -65,6 +67,12 @@ namespace BLog {
         {
             m_logLevel = logLevel;
         }
+        Logger& setFileLine(const char* file, int line)
+        {
+            this->file = file;
+            this->line = line;
+            return *this;
+        }
     private:
         Logger(std::ostream& stream, Level logLevel = Level::Debug);
         ~Logger() {};
@@ -72,6 +80,8 @@ namespace BLog {
         Level m_level;
         Level m_logLevel;
         bool m_levelSet;
+        const char* file;
+        int line;
         std::unordered_map<Level, FGColor> m_fgColors;
         std::unordered_map<Level, BGColor> m_bgColors;
         std::unordered_map<Level, FGColor> m_tagFGColors;

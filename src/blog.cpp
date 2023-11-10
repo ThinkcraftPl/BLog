@@ -63,7 +63,8 @@ namespace BLog {
         m_stream << "\033[" << static_cast<int>(m_tagFGColors[m_level]) << ";" << static_cast<int>(m_tagBGColors[m_level]) << "m" << "[" << m_tags[m_level];
         auto now = std::chrono::system_clock::now();
         m_stream << date::format(" %T ", date::floor<std::chrono::milliseconds>(now));
-        m_stream << __FILE__ << ":" << __LINE__ << "]";
+        if(file != "")
+            m_stream << file << ":" << line << "]";
         m_stream << "\033[" << static_cast<int>(m_fgColors[m_level]) << ";" << static_cast<int>(m_bgColors[m_level]) << "m ";
 
         return *this;
@@ -77,6 +78,8 @@ namespace BLog {
         }
         if(m_level < m_logLevel)
         {
+            file="";
+            line=0;
             m_levelSet = false;
             return *this;
         }
@@ -84,10 +87,14 @@ namespace BLog {
         {
             case Special::endl:
                 m_stream << "\033[0m" << std::endl;
+                file="";
+                line=0;
                 m_levelSet = false;
                 break;
             case Special::flush:
                 m_stream << "\033[0m" << std::flush;
+                file="";
+                line=0;
                 m_levelSet = false;
                 break;
         }
