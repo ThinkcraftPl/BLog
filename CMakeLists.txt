@@ -39,7 +39,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_subdirectory(dependencies/date)
+add_subdirectory(dependencies/date ${CMAKE_CURRENT_BINARY_DIR}/date)
 target_link_libraries(${PROJECT_NAME} date::date)
 add_dependencies(${PROJECT_NAME} date::date)
 
