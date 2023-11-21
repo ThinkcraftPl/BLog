@@ -4,9 +4,13 @@
 #include <unordered_map>
 #include <BLog/colors.hpp>
 
+#ifndef BLOG_LEVEL
+#define BLOG_LEVEL BLog::Level::Debug
+#endif
+
 #define BLogSetLogLevel(level) BLog::Logger::instance().setLogLevel(level)
 
-#define BLogFileLine BLog::Logger::instance().setFileLine(__FILE__,__LINE__)
+#define BLogFileLine BLog::Logger::instance().setFileLine(__FILE__, __LINE__)
 
 #define BLog(level, data) BLogFileLine << level << data << BLog::Special::flush
 #define BLogLine(level, data) BLogFileLine << level << data << BLog::Special::endl
@@ -23,40 +27,44 @@
 #define BLogErrorLine(data) BLogLine(BLog::Level::Error, data)
 #define BLogFatalLine(data) BLogLine(BLog::Level::Fatal, data)
 
-namespace BLog {
-    enum class Level {
+namespace BLog
+{
+    enum class Level
+    {
         Debug,
         Info,
         Warning,
         Error,
         Fatal
     };
-    enum class Special {
+    enum class Special
+    {
         endl,
         flush
     };
-    class Logger {
+    class Logger
+    {
     public:
-        Logger(const Logger&) = delete;
-        Logger& operator=(const Logger&) = delete;
+        Logger(const Logger &) = delete;
+        Logger &operator=(const Logger &) = delete;
 
-        static Logger& instance()
+        static Logger &instance()
         {
             static Logger logger(std::cout);
             return logger;
         }
-        Logger& operator<<(Level level);
-        Logger& operator<<(Special special);
-        Logger& operator<<(FGColor fgColor);
-        Logger& operator<<(BGColor bgColor);
-        template<typename T>
-        Logger& operator<<(const T& t)
+        Logger &operator<<(Level level);
+        Logger &operator<<(Special special);
+        Logger &operator<<(FGColor fgColor);
+        Logger &operator<<(BGColor bgColor);
+        template <typename T>
+        Logger &operator<<(const T &t)
         {
             if (!m_levelSet)
             {
                 this->operator<<(Level::Info);
             }
-            if(m_level < m_logLevel)
+            if (m_level < m_logLevel)
             {
                 return *this;
             }
@@ -67,20 +75,21 @@ namespace BLog {
         {
             m_logLevel = logLevel;
         }
-        Logger& setFileLine(const char* file, int line)
+        Logger &setFileLine(const char *file, int line)
         {
             this->file = file;
             this->line = line;
             return *this;
         }
+
     private:
-        Logger(std::ostream& stream, Level logLevel = Level::Debug);
-        ~Logger() {};
-        std::ostream& m_stream;
+        Logger(std::ostream &stream, Level logLevel = BLOG_LEVEL);
+        ~Logger(){};
+        std::ostream &m_stream;
         Level m_level;
         Level m_logLevel;
         bool m_levelSet;
-        const char* file;
+        const char *file;
         int line;
         std::unordered_map<Level, FGColor> m_fgColors;
         std::unordered_map<Level, BGColor> m_bgColors;
