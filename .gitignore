@@ -7,3 +7,4 @@ libBLog.a
 BLog_sandbox
 lib/
 bin/
+*.cmake

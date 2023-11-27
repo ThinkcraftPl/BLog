@@ -44,7 +44,7 @@ target_link_libraries(${PROJECT_NAME} date::date)
 add_dependencies(${PROJECT_NAME} date::date)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  CXX_STANDARD 17
+  CXX_STANDARD 20
   CXX_STANDARD_REQUIRED YES
   CXX_EXTENSIONS NO
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
@@ -56,7 +56,7 @@ target_link_libraries(${PROJECT_NAME}_sandbox ${PROJECT_NAME})
 add_dependencies(${PROJECT_NAME}_sandbox ${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME}_sandbox PROPERTIES
-  CXX_STANDARD 17
+  CXX_STANDARD 20
   CXX_STANDARD_REQUIRED YES
   CXX_EXTENSIONS NO
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin

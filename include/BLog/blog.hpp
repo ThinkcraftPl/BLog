@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <thread>
 #include <unordered_map>
 #include <BLog/colors.hpp>
 
@@ -10,7 +13,13 @@
 
 #define BLogSetLogLevel(level) BLog::Logger::instance().setLogLevel(level)
 
-#define BLogFileLine BLog::Logger::instance().setFileLine(__FILE__, __LINE__)
+#ifndef __FILE_NAME__
+    #define BLogFileLine BLog::Logger::instance().setFileLine(__FILE__, __LINE__)
+#else
+    #define BLogFileLine BLog::Logger::instance().setFileLine(__FILE_NAME__, __LINE__)
+#endif
+
+#define BLogInstanceName(name) BLog::Logger::instance().setInstanceName(name)
 
 #define BLog(level, data) BLogFileLine << level << data << BLog::Special::flush
 #define BLogLine(level, data) BLogFileLine << level << data << BLog::Special::endl
@@ -50,7 +59,7 @@ namespace BLog
 
         static Logger &instance()
         {
-            static Logger logger(std::cout);
+            thread_local Logger logger(std::cout);
             return logger;
         }
         Logger &operator<<(Level level);
@@ -68,7 +77,7 @@ namespace BLog
             {
                 return *this;
             }
-            m_stream << t;
+            m_internalBuffer << t;
             return *this;
         }
         void setLogLevel(Level logLevel)
@@ -82,10 +91,16 @@ namespace BLog
             return *this;
         }
 
+        Logger &setInstanceName(std::string instanceName)
+        {
+            m_instanceName = instanceName;
+            return *this;
+        }
     private:
         Logger(std::ostream &stream, Level logLevel = BLOG_LEVEL);
         ~Logger(){};
-        std::ostream &m_stream;
+        std::ostream &m_outputStream;
+        std::stringstream m_internalBuffer;
         Level m_level;
         Level m_logLevel;
         bool m_levelSet;
@@ -96,5 +111,6 @@ namespace BLog
         std::unordered_map<Level, FGColor> m_tagFGColors;
         std::unordered_map<Level, BGColor> m_tagBGColors;
         std::unordered_map<Level, std::string> m_tags;
+        std::string m_instanceName;
     };
 }

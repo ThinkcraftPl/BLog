@@ -4,7 +4,7 @@
 
 namespace BLog {
     Logger::Logger(std::ostream& stream, Level logLevel)
-        : m_stream(stream)
+        : m_outputStream(stream)
         , m_level(Level::Debug)
         , m_levelSet(false)
         , m_fgColors({
@@ -46,6 +46,10 @@ namespace BLog {
     {
         std::ios_base::sync_with_stdio(false);
         std::cout.tie(nullptr);
+
+        std::stringstream ss;
+        ss<<std::this_thread::get_id();
+        setInstanceName(ss.str());
     }
 
     Logger& Logger::operator<<(Level level)
@@ -60,12 +64,14 @@ namespace BLog {
         {
             return *this;
         }
-        m_stream << "\033[" << static_cast<int>(m_tagFGColors[m_level]) << ";" << static_cast<int>(m_tagBGColors[m_level]) << "m" << "[" << m_tags[m_level];
+        m_internalBuffer.str("");
+        m_internalBuffer << "\033[" << static_cast<int>(m_tagFGColors[m_level]) << ";" << static_cast<int>(m_tagBGColors[m_level]) << "m" << "[" << m_tags[m_level];
         auto now = std::chrono::system_clock::now();
-        m_stream << date::format(" %T ", date::floor<std::chrono::milliseconds>(now));
+        m_internalBuffer << date::format(" %T ", date::floor<std::chrono::milliseconds>(now));
+        m_internalBuffer << m_instanceName << " ";
         if(file != "")
-            m_stream << file << ":" << line << "]";
-        m_stream << "\033[" << static_cast<int>(m_fgColors[m_level]) << ";" << static_cast<int>(m_bgColors[m_level]) << "m ";
+            m_internalBuffer << file << ":" << line << "]";
+        m_internalBuffer << "\033[" << static_cast<int>(m_fgColors[m_level]) << ";" << static_cast<int>(m_bgColors[m_level]) << "m ";
 
         return *this;
     }
@@ -86,13 +92,15 @@ namespace BLog {
         switch (special)
         {
             case Special::endl:
-                m_stream << "\033[0m" << std::endl;
+                m_internalBuffer << "\033[0m" << "\n";
+                m_outputStream<< m_internalBuffer.str() << std::flush;
                 file="";
                 line=0;
                 m_levelSet = false;
                 break;
             case Special::flush:
-                m_stream << "\033[0m" << std::flush;
+                m_internalBuffer << "\033[0m";
+                m_outputStream<< m_internalBuffer.str() << std::flush;
                 file="";
                 line=0;
                 m_levelSet = false;
@@ -107,7 +115,7 @@ namespace BLog {
         {
             return *this;
         }
-        m_stream << "\033[" << static_cast<int>(fgColor) << "m";
+        m_internalBuffer << "\033[" << static_cast<int>(fgColor) << "m";
         return *this;
     }
 
@@ -117,7 +125,7 @@ namespace BLog {
         {
             return *this;
         }
-        m_stream << "\033[" << static_cast<int>(bgColor) << "m";
+        m_internalBuffer << "\033[" << static_cast<int>(bgColor) << "m";
         return *this;
     }
 }
