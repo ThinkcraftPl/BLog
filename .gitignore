@@ -8,3 +8,4 @@ BLog_sandbox
 lib/
 bin/
 *.cmake
+.cache/
